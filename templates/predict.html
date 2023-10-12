@@ -1,0 +1,15 @@
+{% extends 'base.html' %} {% block title %}HOME{% endblock %} {% block content%}
+<p>Sequence: {{ seq }}</p>
+<table>
+{% for sequence in spliced_seq %}
+    <tr>
+        <td>{{ sequence }}</td>
+    </tr>
+{% endfor %}
+{% for pred in predictions %}
+    <tr>
+        <td>{{ pred }}</td>
+    </tr>
+{% endfor %}
+</table>
+{% endblock %}

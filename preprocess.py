@@ -5,11 +5,15 @@ from sklearn.utils import shuffle
 import re
 
 def windowing(sequence):
-    sliced_sequence = []
+    sliced_sequences = []
+    positions = []
     for idx, residue in enumerate(sequence):
         if residue == 'R':
-            sliced_sequence.append(sequence[idx-9:idx+10])
-    return sliced_sequence    
+            sliced = sequence[idx-9:idx+10]
+            if len(sliced) == 19:
+                sliced_sequences.append(sliced)
+            positions.append(idx+1)
+    return sliced_sequences, positions   
 
 def get_path(parent_dir):
     paths = []

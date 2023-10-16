@@ -1,9 +1,15 @@
 {% extends 'base.html' %}
 {% block title %}HOME{% endblock %}
 {% block content %}
-    <form action="{{ url_for('predict') }}" method='POST'>
-        <textarea name="sequence" id="sequence" cols="80" rows="10"></textarea>
-        <input type="submit" value="Predict" name="submit">
-    </form>
-    
+    <div class="mt-5" class="form-floating">
+        <h3 style="color: #113946;">Paste or upload your protein sequences</h3>
+        <form action="{{ url_for('predict') }}" enctype=multipart/form-data method='POST' class="mt-3">
+            <textarea name="sequence" class="form-control" id="sequence" cols="80" rows="5"></textarea>
+            <div class="mb-3">
+                <label for="formFile" class="form-label mt-2">Upload protein sequences</label>
+                <input class="form-control" type="file" name="file_seq" id="file_seq">
+            </div>
+            <input type="submit" value="Predict" class="btn mt-2" style="background-color: #113946; color: #FFFFFF;" name="submit">
+        </form>
+    </div>
 {% endblock %}

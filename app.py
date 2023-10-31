@@ -12,6 +12,7 @@ from sklearn.metrics import confusion_matrix
 from sklearn.metrics import matthews_corrcoef
 from models.Neo import ModelNeo
 from transformers import AutoTokenizer, AutoModel
+from torch.nn import functional as F
 from preprocess import get_path, preprocess_data, label_data, tokenize, neo_tokenize, windowing
 
 UPLOAD_FOLDER = 'static/uploads'
@@ -48,17 +49,27 @@ def about():
 @app.route('/predict', methods=['POST'])
 def predict():
     input_seq = request.form.get('sequence')
-    if 'file_seq' not in request.files:
-        flash('No file part')
-        return redirect('/')
-    file_seq = request.files['file_seq']
-    if file_seq.filename == '':
-        flash('No selected file')
-        return redirect(request.url)
-    if file_seq and allowed_file(file_seq.filename):
-        filename = secure_filename(file_seq.filename)
-        file_seq.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        print(filename)
+    threshold = float(request.form.get('threshold'))
+    print('threshold', threshold, type(threshold))
+    # if 'file_seq' not in request.files:
+    #     flash('No file part')
+    #     return redirect(url_for('index'))
+
+    if not input_seq:
+        file = request.files['file_seq']
+        file_name = secure_filename(file.filename)
+
+        # if not file_name:
+        #     flash('No selected file')
+        #     return redirect(url_for('index'))
+        file_ext = file_name.rsplit('.', 1)[1].lower()
+
+        if file and allowed_file(file_name):
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], file_name))
+
+        if file_ext == "fasta":
+            record = SeqIO.read(UPLOAD_FOLDER+"/"+file_name, "fasta")
+            input_seq = record.seq
 
     spliced_seq, positions = windowing(input_seq)
     residues = np.array([list(residue) for residue in spliced_seq])
@@ -69,10 +80,14 @@ def predict():
     model.load_state_dict(torch.load("checkpoints/best_model_merged.pth"))
 
     with torch.no_grad():
-        preds = model(tokens)
-        preds = preds.detach().cpu().numpy()
+        logits = model(tokens)
+        # logits = logits.detach().cpu()
 
-    preds = np.argmax(preds, axis=1)
+    probs = F.softmax(logits, dim=1)
+    print('probs:\n', probs)
+    preds = (probs[:, 1] > threshold).int()
+    # print('probs:\n', preds)
+    # preds = np.argmax(logits, axis=1)
     pred_classes = ["Positive" if pred == 1 else "Negative" for pred in preds]
     results = [(seq, site, pred)
                for seq, site, pred in zip(spliced_seq, positions, pred_classes)]

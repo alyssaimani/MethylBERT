@@ -1,14 +1,16 @@
 # MethylBERT
+MethylBERT is an advanced prediction tool based on BERT (Bidirectional Encoder Representations from Transformers) specifically designed to identify arginine methylation sites in proteins. Arginine methylation is a crucial post-translational modification (PTM) process in eukaryotic cells, and understanding its regulation is vital for advancing knowledge in cellular biology and related fields. To enhance computational PTM site prediction and related studies, MethylBERT was designed as a cutting-edge arginine methylation prediction model and integrated into a user-friendly web application.
+**Example prediction result** 
+![image](https://github.com/alyssaimani/MethylBERT/assets/56471157/05e6dce3-596a-42f3-8156-49f638d530ef)
 
-# Requirement
+# Installation
+You need to install all required packages listed in the file requirements.txt to run this web app. Use the package manager pip to install all the required package.
 ```
-transformers==4.33.0
-biopython==1.81
-numpy==1.23.5
-torch==2.0.1
-torchaudio==2.0.2
-torchview==0.2.6
-torchvision==0.15.2
-Flask==2.1.3
-Werkzeug==2.2.1
+pip install -r requirements.txt
+```
+
+# How to run
+Run this flask web app by executing this command.
+```
+python app.py
 ```
